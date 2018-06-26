@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2016 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
+﻿/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 using System.Collections.Generic;
 using IBApi;
@@ -930,6 +930,15 @@ namespace Samples
             //of...
             order.AdjustedTrailingAmount = adjustedTrailAmount;
             //! [adjustable_trail]        
+            return order;
+        }
+
+        public static Order WhatIfLimitOrder(string action, double quantity, double limitPrice)
+        {
+            // ! [whatiflimitorder]
+            Order order = LimitOrder(action, quantity, limitPrice);
+            order.WhatIf = true;
+            // ! [whatiflimitorder]
             return order;
         }
 

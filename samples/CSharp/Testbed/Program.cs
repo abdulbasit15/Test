@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
+/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 using System;
 using IBApi;
@@ -57,6 +57,11 @@ namespace Samples
             /***************************************************/
             //tickDataOperations(client);
 
+            /***************************************************/
+            /*** Option computation operations  - Tickers    ***/
+            /***************************************************/
+            //tickOptionComputationOperations(client);
+
             /********************************************************/
             /*** Real time market data operations  - Market Depth ***/
             /********************************************************/
@@ -65,17 +70,17 @@ namespace Samples
             /**********************************************************/
             /*** Real time market data operations  - Real Time Bars ***/
             /**********************************************************/
-            //realTimeBars(client);
+            realTimeBars(client);
+
+            /**********************************/
+            /*** Historical Data operations ***/
+            /**********************************/
+            //historicalDataRequests(client);
 
             /**************************************************************************************/
             /*** Real time market data operations  - Streamed, Frozen, Delayed or Delayed-Frozen***/
             /**************************************************************************************/
             //marketDataType(client);
-
-            /**********************************/
-            /*** Historical Data operations ***/
-            /**********************************/
-            historicalDataRequests(client);
 
             /*************************/
             /*** Options Specifics ***/
@@ -178,8 +183,15 @@ namespace Samples
             /**************************/
             //tickByTickOperations(client);
 
+            /***********************/
+            /*** What-If samples ***/
+            /***********************/
+            //whatIfSamples(client, nextValidId);
+
             Thread.Sleep(500000000);
             Thread.Sleep(500000000);
+            Thread.Sleep(500000000);
+            Thread.Sleep(3000);
             Console.WriteLine("Done");
             Thread.Sleep(500000);
         }
@@ -189,10 +201,10 @@ namespace Samples
 
             /*** Requesting tick-by-tick data (only refresh) ***/
             //! [reqtickbytick]
-            client.reqTickByTickData(19001, ContractSamples.USStockAtSmart(), "Last");
-            client.reqTickByTickData(19002, ContractSamples.USStockAtSmart(), "AllLast");
-            client.reqTickByTickData(19003, ContractSamples.USStockAtSmart(), "BidAsk");
-            client.reqTickByTickData(19004, ContractSamples.EurGbpFx(), "MidPoint");
+            client.reqTickByTickData(19001, ContractSamples.USStockAtSmart(), "Last", 0, false);
+            client.reqTickByTickData(19002, ContractSamples.USStockAtSmart(), "AllLast", 0, false);
+            client.reqTickByTickData(19003, ContractSamples.USStockAtSmart(), "BidAsk", 0, true);
+            client.reqTickByTickData(19004, ContractSamples.EurGbpFx(), "MidPoint", 0, false);
             //! [reqtickbytick]
 
             Thread.Sleep(10000);
@@ -202,6 +214,25 @@ namespace Samples
             client.cancelTickByTickData(19002);
             client.cancelTickByTickData(19003);
             client.cancelTickByTickData(19004);
+            //! [canceltickbytick]
+
+            Thread.Sleep(5000);
+
+            /*** Requesting tick-by-tick data (historical + refresh) ***/
+            //! [reqtickbytick]
+            client.reqTickByTickData(19005, ContractSamples.EuropeanStock(), "Last", 10, false);
+            client.reqTickByTickData(19006, ContractSamples.EuropeanStock(), "AllLast", 10, false);
+            client.reqTickByTickData(19007, ContractSamples.EuropeanStock(), "BidAsk", 10, false);
+            client.reqTickByTickData(19008, ContractSamples.EurGbpFx(), "MidPoint", 10, true);
+            //! [reqtickbytick]
+
+            Thread.Sleep(10000);
+
+            //! [canceltickbytick]
+            client.cancelTickByTickData(19005);
+            client.cancelTickByTickData(19006);
+            client.cancelTickByTickData(19007);
+            client.cancelTickByTickData(19008);
             //! [canceltickbytick]
         }
 
@@ -349,6 +380,11 @@ namespace Samples
             client.reqMktData(1015, ContractSamples.SimpleFuture(), "", false, false, null);
             //! [reqmktDatapreopenbidask]
 
+            //! [reqavgoptvolume]
+            //Requesting data for a stock will return the average option volume
+            client.reqMktData(1016, ContractSamples.USStockAtSmart(), "mdoff,105", false, false, null);
+            //! [reqavgoptvolume]
+
             Thread.Sleep(10000);
             /*** Canceling the market data subscription ***/
             //! [cancelmktdata]
@@ -357,6 +393,22 @@ namespace Samples
             client.cancelMktData(1003);
             client.cancelMktData(1014);
             client.cancelMktData(1015);
+            client.cancelMktData(1016);
+            //! [cancelmktdata]
+        }
+
+        private static void tickOptionComputationOperations(EClientSocket client)
+        {
+            /*** Requesting real time market data ***/
+            //! [reqmktdata]
+            client.reqMktData(2001, ContractSamples.FuturesOnOptions(), string.Empty, false, false, null);
+            //! [reqmktdata]
+
+            Thread.Sleep(10000);
+
+            /*** Canceling the market data subscription ***/
+            //! [cancelmktdata]
+            client.cancelMktData(2001);
             //! [cancelmktdata]
         }
 
@@ -383,12 +435,12 @@ namespace Samples
         {
             /*** Requesting real time bars ***/
             //! [reqrealtimebars]
-            client.reqRealTimeBars(3001, ContractSamples.EurGbpFx(), 5, "MIDPOINT", true, null);
+            client.reqRealTimeBars(3001, ContractSamples.USOptionContract(), 5, "MIDPOINT", true, null);
             //! [reqrealtimebars]
-            Thread.Sleep(2000);
-            /*** Canceling real time bars ***/
-            //! [cancelrealtimebars]
-            client.cancelRealTimeBars(3001);
+            //Thread.Sleep(2000);
+            ///*** Canceling real time bars ***/
+            ////! [cancelrealtimebars]
+            //client.cancelRealTimeBars(3001);
             //! [cancelrealtimebars]
         }
 
@@ -400,12 +452,36 @@ namespace Samples
             //! [reqmarketdatatype]
         }
 
+         //* @param durationString the amount of time for which the data needs to be retrieved:
+         //*      - " S (seconds)
+         //*      - " D (days)
+         //*      - " W (weeks)
+         //*      - " M (months)
+         //*      - " Y (years)
+         //* @param barSizeSetting the size of the bar:
+         //*      - 1 sec
+         //*      - 5 secs
+         //*      - 15 secs
+         //*      - 30 secs
+         //*      - 1 min
+         //*      - 2 mins
+         //*      - 3 mins
+         //*      - 5 mins
+         //*      - 15 mins
+         //*      - 30 mins
+         //*      - 1 hour
+         //*      - 1 day
+
         private static void historicalDataRequests(EClientSocket client)
         {
             /*** Requesting historical data ***/
             //! [reqhistoricaldata]
             String queryTime = DateTime.Now.ToString("yyyyMMdd HH:mm:ss");
-            client.reqHistoricalData(4002, ContractSamples.USStockAtSmart(), queryTime, "1 Y", "1 hour", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1000, ContractSamples.USStock(), queryTime, "7 D", "1 hour", "MIDPOINT", 1, 1, false, null);
+
+            //client.reqHistoricalData(4002, ContractSamples.USOptionContract(), "20180604", "1 day", "1 min", "MIDPOINT", 1, 1, false, null);
+
+            //client.reqHistoricalData(4001, ContractSamples.EurGbpFx(), queryTime, "1 M", "1 day", "MIDPOINT", 1, 1, false, null);
             //client.reqHistoricalData(4002, ContractSamples.EuropeanStock(), queryTime, "10 D", "1 min", "TRADES", 1, 1, false, null);
             //! [reqhistoricaldata]
             //Thread.Sleep(2000);
@@ -445,6 +521,7 @@ namespace Samples
             client.reqContractDetails(210, ContractSamples.EurGbpFx());
             client.reqContractDetails(211, ContractSamples.Bond());
             client.reqContractDetails(212, ContractSamples.FuturesOnOptions());
+            client.reqContractDetails(213, ContractSamples.SimpleFuture());
             //! [reqcontractdetails]
 
             Thread.Sleep(2000);
@@ -603,39 +680,39 @@ namespace Samples
             //! [order_submission]
 
             //! [faorderoneaccount]
-            //Order faOrderOneAccount = OrderSamples.MarketOrder("BUY", 100);
+            Order faOrderOneAccount = OrderSamples.MarketOrder("BUY", 100);
             // Specify the Account Number directly
-           // faOrderOneAccount.Account = "DU119915";
-            //client.placeOrder(nextOrderId++, ContractSamples.USStock(), faOrderOneAccount);
+            faOrderOneAccount.Account = "DU119915";
+            client.placeOrder(nextOrderId++, ContractSamples.USStock(), faOrderOneAccount);
             //! [faorderoneaccount]
 
             //! [faordergroupequalquantity]
-            //Order faOrderGroupEQ = OrderSamples.LimitOrder("SELL", 200, 2000);
-            //faOrderGroupEQ.FaGroup = "Group_Equal_Quantity";
-            //faOrderGroupEQ.FaMethod = "EqualQuantity";
-            //client.placeOrder(nextOrderId++, ContractSamples.SimpleFuture(), faOrderGroupEQ);
+            Order faOrderGroupEQ = OrderSamples.LimitOrder("SELL", 200, 2000);
+            faOrderGroupEQ.FaGroup = "Group_Equal_Quantity";
+            faOrderGroupEQ.FaMethod = "EqualQuantity";
+            client.placeOrder(nextOrderId++, ContractSamples.SimpleFuture(), faOrderGroupEQ);
             //! [faordergroupequalquantity]
 
             //! [faordergrouppctchange]
-            //Order faOrderGroupPC = OrderSamples.MarketOrder("BUY", 0); ;
+            Order faOrderGroupPC = OrderSamples.MarketOrder("BUY", 0); ;
             // You should not specify any order quantity for PctChange allocation method
-            //faOrderGroupPC.FaGroup = "Pct_Change";
-            //faOrderGroupPC.FaMethod = "PctChange";
-           // faOrderGroupPC.FaPercentage = "100";
-            //client.placeOrder(nextOrderId++, ContractSamples.EurGbpFx(), faOrderGroupPC);
+            faOrderGroupPC.FaGroup = "Pct_Change";
+            faOrderGroupPC.FaMethod = "PctChange";
+            faOrderGroupPC.FaPercentage = "100";
+            client.placeOrder(nextOrderId++, ContractSamples.EurGbpFx(), faOrderGroupPC);
             //! [faordergrouppctchange]
 
             //! [faorderprofile]
-            //Order faOrderProfile = OrderSamples.LimitOrder("BUY", 200, 100);
-            //faOrderProfile.FaProfile = "Percent_60_40";
-            //client.placeOrder(nextOrderId++, ContractSamples.EuropeanStock(), faOrderProfile);
+            Order faOrderProfile = OrderSamples.LimitOrder("BUY", 200, 100);
+            faOrderProfile.FaProfile = "Percent_60_40";
+            client.placeOrder(nextOrderId++, ContractSamples.EuropeanStock(), faOrderProfile);
             //! [faorderprofile]
 		
-	    //! [modelorder]
-            //Order modelOrder = OrderSamples.LimitOrder("BUY", 200, 100);
-            //modelOrder.Account = "DF12345";  // master FA account number
-            //modelOrder.ModelCode = "Technology"; // model for tech stocks first created in TWS
-            //client.placeOrder(nextOrderId++, ContractSamples.USStock(), modelOrder);
+			//! [modelorder]
+            Order modelOrder = OrderSamples.LimitOrder("BUY", 200, 100);
+            modelOrder.Account = "DF12345";  // master FA account number
+            modelOrder.ModelCode = "Technology"; // model for tech stocks first created in TWS
+            client.placeOrder(nextOrderId++, ContractSamples.USStock(), modelOrder);
             //! [modelorder]
 
             //client.placeOrder(nextOrderId++, ContractSamples.OptionAtBOX(), OrderSamples.Block("BUY", 50, 20));
@@ -989,6 +1066,14 @@ namespace Samples
             Thread.Sleep(10000);
             client.cancelHistoricalData(18002);
             //! [reqhistoricaldatacontfut]
+        }
+
+        private static void whatIfSamples(EClientSocket client, int nextOrderId)
+        {
+            /*** Placing what-if order ***/
+            //! [whatiforder]
+            client.placeOrder(nextOrderId++, ContractSamples.USStockAtSmart(), OrderSamples.WhatIfLimitOrder("BUY", 200, 120));
+            //! [whatiforder]
         }
     }
 }
