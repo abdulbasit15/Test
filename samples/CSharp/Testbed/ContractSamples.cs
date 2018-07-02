@@ -215,8 +215,40 @@ namespace Samples
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180629";
-            contract.Strike = 270;
+            contract.LastTradeDateOrContractMonth = "20180702";
+            contract.Strike = 273.5;
+            contract.Right = "C";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
+        public static Contract USOptionContract2()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "SPY";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180703";
+            contract.Strike = 273.5;
+            contract.Right = "C";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
+        public static Contract USOptionContract3()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "SPY";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180706";
+            contract.Strike = 273.5;
             contract.Right = "C";
             contract.Multiplier = "100";
             //! [optcontract_us]

@@ -62,15 +62,15 @@ namespace Samples
             /********************************************************/
             //marketDepthOperations(client);
 
-            /**********************************************************/
-            /*** Real time market data operations  - Real Time Bars ***/
-            /**********************************************************/
-            //realTimeBars(client);
-
             /**************************************************************************************/
             /*** Real time market data operations  - Streamed, Frozen, Delayed or Delayed-Frozen***/
             /**************************************************************************************/
             //marketDataType(client);
+
+            /**********************************************************/
+            /*** Real time market data operations  - Real Time Bars ***/
+            /**********************************************************/
+            //realTimeBars(client);
 
             /**********************************/
             /*** Historical Data operations ***/
@@ -383,12 +383,14 @@ namespace Samples
         {
             /*** Requesting real time bars ***/
             //! [reqrealtimebars]
-            client.reqRealTimeBars(3001, ContractSamples.EurGbpFx(), 5, "MIDPOINT", true, null);
+            client.reqRealTimeBars(1001, ContractSamples.USOptionContract(), 5, "MIDPOINT", true, null);
+            client.reqRealTimeBars(1002, ContractSamples.USOptionContract2(), 5, "MIDPOINT", true, null);
+            client.reqRealTimeBars(1003, ContractSamples.USOptionContract3(), 5, "MIDPOINT", true, null);
             //! [reqrealtimebars]
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
             /*** Canceling real time bars ***/
             //! [cancelrealtimebars]
-            client.cancelRealTimeBars(3001);
+            //client.cancelRealTimeBars(3001);
             //! [cancelrealtimebars]
         }
 
