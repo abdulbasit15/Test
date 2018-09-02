@@ -70,12 +70,12 @@ namespace Samples
             /**********************************************************/
             /*** Real time market data operations  - Real Time Bars ***/
             /**********************************************************/
-            //realTimeBars(client);
+            realTimeBars(client);
 
             /**********************************/
             /*** Historical Data operations ***/
             /**********************************/
-            historicalDataRequests(client);
+            //historicalDataRequests(client);
 
             /*************************/
             /*** Options Specifics ***/
@@ -386,6 +386,9 @@ namespace Samples
             client.reqRealTimeBars(1001, ContractSamples.USOptionContract(), 5, "MIDPOINT", true, null);
             client.reqRealTimeBars(1002, ContractSamples.USOptionContract2(), 5, "MIDPOINT", true, null);
             client.reqRealTimeBars(1003, ContractSamples.USOptionContract3(), 5, "MIDPOINT", true, null);
+
+            //client.reqRealTimeBars(1004, ContractSamples.USOptionContract4(), 5, "MIDPOINT", true, null);
+            //client.reqRealTimeBars(1003, ContractSamples.USOptionContract3(), 5, "MIDPOINT", true, null);
             //! [reqrealtimebars]
             //Thread.Sleep(2000);
             /*** Canceling real time bars ***/

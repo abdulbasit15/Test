@@ -211,13 +211,13 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "SPY";
+            contract.Symbol = "TSLA";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180702";
-            contract.Strike = 273.5;
-            contract.Right = "C";
+            contract.LastTradeDateOrContractMonth = "20180907";
+            contract.Strike = 295;
+            contract.Right = "P";
             contract.Multiplier = "100";
             //! [optcontract_us]
             return contract;
@@ -227,13 +227,13 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "SPY";
+            contract.Symbol = "TSLA";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180703";
-            contract.Strike = 273.5;
-            contract.Right = "C";
+            contract.LastTradeDateOrContractMonth = "20180907";
+            contract.Strike = 297.5;
+            contract.Right = "P";
             contract.Multiplier = "100";
             //! [optcontract_us]
             return contract;
@@ -243,12 +243,28 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
+            contract.Symbol = "QQQ";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180907";
+            contract.Strike = 186;
+            contract.Right = "C";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
+        public static Contract USOptionContract4()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
             contract.Symbol = "SPY";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180706";
-            contract.Strike = 273.5;
+            contract.LastTradeDateOrContractMonth = "20180813";
+            contract.Strike = 286;
             contract.Right = "C";
             contract.Multiplier = "100";
             //! [optcontract_us]

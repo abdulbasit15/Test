@@ -792,7 +792,6 @@ namespace Samples
                 SingleBuyOptionBackTest(reqId, bar);
             }
         }
-
         private void SingleBuyOptionBackTest(int reqId, Bar bar)
         {
             int numberOfTrades = 0;
@@ -1118,182 +1117,7 @@ namespace Samples
             }
         }
         //! [realtimebar]
-        public virtual void realtimeBar(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
-        {
-            List<double> l = new List<double>();
-            l.Add(open);
-            l.Add(close);
-
-            //if (reqId == 3001)
-            //{
-            //    RealSingleBuy(reqId, time, open, high, low, close, volume, WAP, count);
-            //    Console.WriteLine("RealTimeBars. " + reqId + " - Time: " + time + ", Open: " + open + ", High: " + high + ", Low: " + low + ", Close: " + close + ", Volume: " + volume + ", Count: " + count + ", WAP: " + WAP);
-            //}
-            //else
-            //{
-            //    RealOptionSingleBuy(reqId, time, open, high, low, close, volume, WAP, count);
-            //    Console.WriteLine("Option RealTimeBars. " + reqId + " - Time: " + time + ", Open: " + open + ", High: " + high + ", Low: " + low + ", Close: " + close + ", Volume: " + volume + ", Count: " + count + ", WAP: " + WAP);
-            //}
-            RealOptionSingleBuy(reqId, time, open, high, low, close, volume, WAP, count);
-            Console.WriteLine("Option RealTimeBars. " + reqId + " - Time: " + time + ", Open: " + open + ", High: " + high + ", Low: " + low + ", Close: " + close + ", Volume: " + volume + ", Count: " + count + ", WAP: " + WAP);
-
-        }
-
-        private void RealOptionSingleBuy(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
-        {
-            int numberOfTrades = 0;
-            bool buyTrigger = false;
-            bool dayTrade = false;
-            double soldStockTotal = 0, boughtStockTotal = 0;
-            double boughtStock = 0;
-            double soldStock = 0;           
-            double lastOpen = 0, lastclose = 0, profit = 0, avgPrice = 0;
-            System.DateTime startDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            startDate = startDate.AddSeconds(time).ToLocalTime();
-            DateTime currentDate = startDate;
-            bool buyTimeFrame = true;
-            var dontBuyTime = currentDate.Date.AddHours(15).AddMinutes(30);
-            var sellTime = currentDate.Date.AddHours(15).AddMinutes(58);
-
-            //if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv"))
-            //{
-            //    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv"))
-            //    {
-            //        //File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-            //        sw.WriteLine("currentDate" + "," + "open" + "," + "close" + "," + "dayTrade" + "," + "buyTrigger" + "," + "boughtStock" + "," + "soldStock" + "," + "profit" + "," + "close" + "," + "avgPrice" + ", " + "numberOfTrades");
-            //    }
-            //}
-
-            //if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-obarCalculation.csv"))
-            //{
-            //    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-obarCalculation.csv"))
-            //    {
-            //        //File.WriteAllText(DateTime.Today.ToString("yyyyMMdd") + "-" + reqId + "-obarCalculation.csv", time + ", " + open + ", " + close + ", " + barSize);
-            //        sw.WriteLine("time" + "," + "open" + "," + "close" + "," + "barSize");
-            //    }
-            //}
-
-            using (StreamWriter w = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv")) { }
-            var text = File.ReadAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv");
-            
-            // barsize = multiple of 5 secs. eg 1min = 12
-            var per = GetOptionBarSize(reqId, time, open, close, 12);
-            if (per != "0,0,0")
-            {
-                var barSplits = per.Split(',');
-                double o = Convert.ToDouble(barSplits[0]);
-                double c = Convert.ToDouble(barSplits[1]);
-                open = o;
-                close = c;
-                var percentage = (close - open) * 100 / open;
-                if (string.IsNullOrEmpty(text))
-                {
-                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", startDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                    startDate = currentDate;
-                    lastOpen = open;
-                    lastclose = close;
-                }
-                else
-                {
-                    string[] splits = text.Split(',');
-                    //startDate = Convert.ToDateTime(splits[0]);
-                    lastOpen = Convert.ToDouble(splits[1]);
-                    lastclose = Convert.ToDouble(splits[2]);
-                    dayTrade = Convert.ToBoolean(splits[3]);
-                    buyTrigger = Convert.ToBoolean(splits[4]);
-                    boughtStock = Convert.ToDouble(splits[5]);
-                    soldStock = Convert.ToDouble(splits[6]);
-                    //profit = Convert.ToDouble(splits[7]);
-                    avgPrice = Convert.ToDouble(splits[9]);
-                    numberOfTrades = Convert.ToInt32(splits[10]);
-                }
-
-                if (percentage < -5)
-                {
-                    buyTrigger = true;
-                }
-
-                if (startDate > dontBuyTime)
-                {
-                    buyTimeFrame = false;
-                }
-
-                if (buyTrigger)
-                {
-                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                    if (buyTimeFrame && boughtStock == 0 && percentage > 0)
-                    {
-                        boughtStock = 100 * close;
-                        numberOfTrades++;
-                        avgPrice = avgPrice == 0 ? close : (avgPrice + close) / 2;
-                        File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                        Buy(reqId);                        
-
-                        //System.Threading.Thread.Sleep(1000);
-                        //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.Stop("SELL", 100, Math.Round(close * .85, 2)));
-                        //clientSocket.reqPositions();
-                        //clientSocket.cancelPositions();
-                    }
-
-                    if (boughtStock > 0)
-                    {
-                        if ((percentage < 0 && close > 1.05 * avgPrice) || (close < avgPrice * .90) || ((startDate > sellTime)))
-                        {
-                            soldStock = 100 * close;
-                            avgPrice = 0;
-                            //numberOfTrades = 0;
-                            dayTrade = true;
-                            buyTrigger = false;
-                            soldStockTotal = soldStock;
-                            profit = soldStock - boughtStock;
-                            boughtStockTotal = boughtStock;
-                            boughtStock = 0;
-                            soldStock = 0;
-                            File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                            Sell(reqId);
-                        }
-                    }
-                }
-                  
-                if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
-                {
-                    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
-                    {
-                        sw.WriteLine("startDate" + "," + "Expiration" + "," + "days" + "," + "strike" + "," + "callPut" + "," + "open" + "," + "high" + "," + "low" + "," + "close" + "," + "percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
-                    }
-                }
-              
-                using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
-                {
-                    string expiration="", days="", strike="", callPut = "";
-                    if (reqId == 1001)
-                    {
-                        expiration = ContractSamples.USOptionContract().LastTradeDateOrContractMonth;
-                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
-                        strike = ContractSamples.USOptionContract().Strike.ToString();
-                        callPut = ContractSamples.USOptionContract().Right;
-                    }
-                    if (reqId == 1002)
-                    {
-                        expiration = ContractSamples.USOptionContract2().LastTradeDateOrContractMonth;
-                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
-                        strike = ContractSamples.USOptionContract2().Strike.ToString();
-                        callPut = ContractSamples.USOptionContract2().Right;
-                    }
-                    if (reqId == 1003)
-                    {
-                        expiration = ContractSamples.USOptionContract3().LastTradeDateOrContractMonth;
-                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
-                        strike = ContractSamples.USOptionContract3().Strike.ToString();
-                        callPut = ContractSamples.USOptionContract3().Right;
-                    }
-                    //sw.WriteLine("CurrentDateTime" + "," + "Expiration" + "," + "days" + "," + "stockValue" + "," + "strike" + "," + "callPut" + "," + "Open" + "," + "High" + "," + "Low" + "," + "Close" + "," + "Percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
-                    sw.WriteLine(startDate + "," + expiration + "," + days + "," + strike + "," + callPut + "," + open + "," + high + "," + low + "," + close + "," + (close - open) * 100 / open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStockTotal + ", " + soldStockTotal + ", " + profit + ", " + avgPrice + ", " + numberOfTrades);
-                    sw.Flush();
-                }
-            }
-        }
-
+        
         public int GetBusinessDays(DateTime start, DateTime end)
         {
             if (start.DayOfWeek == DayOfWeek.Saturday)
@@ -1342,6 +1166,10 @@ namespace Samples
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3(), OrderSamples.MarketOrder("BUY", 100));
             }
+            if (reqId == 1004)
+            {
+                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4(), OrderSamples.MarketOrder("BUY", 100));
+            }
         }
 
         private void Sell(int reqId)
@@ -1358,20 +1186,11 @@ namespace Samples
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3(), OrderSamples.MarketOrder("SELL", 100));
             }
-        }
-
-        public virtual void position(string account, Contract contract, double pos, double avgCost)
-        {
-            Console.WriteLine("Position. " + account + " - Symbol: " + contract.Symbol + ", SecType: " + contract.SecType + ", Currency: " + contract.Currency + ", Position: " + pos + ", Avg cost: " + avgCost);
-
-            if (pos == 100)
+            if (reqId == 1004)
             {
-                File.WriteAllText("avgCost.csv", avgCost + "," + pos + "," + contract.Symbol + "," + contract.SecType);
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.Stop("SELL", pos, Math.Round((avgCost / 100) * .90, 2)));
-                clientSocket.cancelPositions();
-                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.LimitOrder("SELL", pos, Math.Round(avgCost / 100 * 1.05, 2)));
+                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4(), OrderSamples.MarketOrder("SELL", 100));
             }
-        }
+        }       
 
         private void RecursiveBuy(int reqId, Bar bar)
         {
@@ -1504,111 +1323,6 @@ namespace Samples
             return data;
         }
 
-        private void RealSingleBuy(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
-        {
-            int numberOfTrades = 0;
-            bool buyTrigger = false;
-            bool dayTrade = false;
-            double boughtStock = 0;
-            double soldStock = 0;
-            using (StreamWriter w = File.AppendText("init.csv")) { }
-            var text = File.ReadAllText("init.csv");
-            double lastOpen = 0, lastclose = 0, profit = 0, avgPrice = 0;
-            //DateTime startDate = new DateTime();
-            System.DateTime startDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            startDate = startDate.AddSeconds(time).ToLocalTime();
-            DateTime currentDate = startDate;
-            //DateTime currentDate = DateTime.ParseExact(time.ToString(), "yyyyMMdd  HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-
-            // barsize = multiple of 5 secs. eg 1min = 12
-            var per = GetBarSize(time, open, close, 12);
-            if (per != "0,0,0")
-            {
-                var barSplits = per.Split(',');
-                double o = Convert.ToDouble(barSplits[0]);
-                double c = Convert.ToDouble(barSplits[1]);
-                open = o;
-                close = c;
-                var percentage = (close - open) * 100 / open;
-                System.DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-                dt = startDate.AddSeconds(Convert.ToDouble(barSplits[2])).ToLocalTime();
-                if (string.IsNullOrEmpty(text))
-                {
-                    if (percentage < -0.1)
-                    {
-                        buyTrigger = true;
-                    }
-                    File.WriteAllText("init.csv", startDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                    startDate = currentDate;
-                    lastOpen = open;
-                    lastclose = close;
-                }
-                else
-                {
-                    string[] splits = text.Split(',');
-                    startDate = Convert.ToDateTime(splits[0]);
-                    lastOpen = Convert.ToDouble(splits[1]);
-                    lastclose = Convert.ToDouble(splits[2]);
-                    dayTrade = Convert.ToBoolean(splits[3]);
-                    buyTrigger = Convert.ToBoolean(splits[4]);
-                    boughtStock = Convert.ToDouble(splits[5]);
-                    soldStock = Convert.ToDouble(splits[6]);
-                    //profit = Convert.ToDouble(splits[7]);
-                    avgPrice = Convert.ToDouble(splits[9]);
-                    numberOfTrades = Convert.ToInt32(splits[10]);
-                }
-
-                if (percentage < -0.1)
-                {
-                    buyTrigger = true;
-                }
-
-                if (buyTrigger)
-                {
-                    File.WriteAllText("init.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                    if (boughtStock == 0 && percentage > 0)
-                    {
-                        boughtStock = 100 * close;
-                        numberOfTrades++;
-                        avgPrice = avgPrice == 0 ? close : (avgPrice + close) / 2;
-                        File.WriteAllText("init.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                        clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("BUY", 100));
-                    }
-
-                    if (boughtStock > 0)
-                    {
-                        if (percentage < 0 && close > 1.01 * avgPrice)
-                        {
-                            soldStock = numberOfTrades * 100 * close;
-                            avgPrice = 0;
-                            numberOfTrades = 0;
-                            dayTrade = true;
-                            buyTrigger = false;
-                            profit = soldStock - boughtStock;
-                            boughtStock = 0;
-                            File.WriteAllText("init.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
-                            clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("SELL", 100));
-                        }
-                    }
-                }
-                //if (currentDate.Date > startDate.Date)
-                //{
-                //    File.WriteAllText("init.csv", time + ", " + open + ", " + close);
-                //}                    
-
-                //decimal open, close;
-                using (StreamWriter sw = File.AppendText("mydata.csv"))
-                {
-                    // write the data to the file
-                    //sw.WriteLine("HistoricalData. " + reqId + " - Time: " + time + ", Open: " + open + ", High: " + high + ", Low: " + low + ", Close: " + close + ", Volume: " + volume + ", Count: " + count + ", WAP: " + WAP);
-
-                    sw.WriteLine(startDate + "," + open + "," + high + "," + low + "," + close + "," + volume + "," + count + "," + WAP + "," + (close - open) * 100 / open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + avgPrice + ", " + numberOfTrades);
-                    // Flush the output to disk
-                    sw.Flush();
-                }
-            }
-        }
-
         private string GetBarSize(long time, double open, double close, int barSize)
         {
 
@@ -1646,6 +1360,500 @@ namespace Samples
                 sw.Flush();
             }
             return data;
+        }
+
+        public virtual void position(string account, Contract contract, double pos, double avgCost)
+        {
+            Console.WriteLine("Position. " + account + " - Symbol: " + contract.Symbol + ", SecType: " + contract.SecType + ", Currency: " + contract.Currency + ", Position: " + pos + ", Avg cost: " + avgCost);
+
+            if (pos == 0)
+            {
+                Contract contract4 = ContractSamples.USOptionContract4();
+                if (contract.Symbol == contract4.Symbol
+                    && contract.LastTradeDateOrContractMonth == contract4.LastTradeDateOrContractMonth
+                    && contract.Strike == contract4.Strike)
+                {
+                    using (StreamWriter sw = File.AppendText(DateTime.Today.ToString("yyyyMMdd") + "-" + contract.Symbol + "-" + contract.LastTradeDateOrContractMonth + "-" + contract.Strike + "-buyTrigger.csv"))
+                    {
+                        sw.WriteLine("0");
+                    }
+                    clientSocket.cancelPositions();
+                }
+                //File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", startDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                //File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                //File.WriteAllText("avgCost.csv", avgCost + "," + pos + "," + contract.Symbol + "," + contract.SecType);
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4(), OrderSamples.Stop("SELL", pos, Math.Round((avgCost / 100) * .90, 2)));
+
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.LimitOrder("SELL", pos, Math.Round(avgCost / 100 * 1.05, 2)));
+            }
+            if(pos == 100)
+            {
+                //clientSocket.cancelPositions();
+                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.LimitOrder("SELL", 100, Math.Round(avgCost/100 + .05, 2)));
+            }
+        }
+
+        public virtual void realtimeBar(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
+        {
+            List<double> l = new List<double>();
+            l.Add(open);
+            l.Add(close);
+
+            //if (reqId == 1003)
+            //{
+            //    RealOptionMinTrailingSell(reqId, time, open, high, low, close, volume, WAP, count);
+            //}
+            //else if (reqId == 1004)
+            //{
+            //    RealOptionMinLimitSell(reqId, time, open, high, low, close, volume, WAP, count);
+            //}
+            //else
+            //{
+            //    RealOptionSingleBuy(reqId, time, open, high, low, close, volume, WAP, count);
+            //}
+            RealOptionMinTrailingSell(reqId, time, open, high, low, close, volume, WAP, count);
+            Console.WriteLine("Option RealTimeBars. " + reqId + " - Time: " + time + ", Open: " + open + ", High: " + high + ", Low: " + low + ", Close: " + close + ", Volume: " + volume + ", Count: " + count + ", WAP: " + WAP);
+        }
+
+        private void RealOptionSingleBuy(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
+        {
+            int numberOfTrades = 0;
+            bool buyTrigger = false;
+            bool dayTrade = false;
+            double soldStockTotal = 0, boughtStockTotal = 0;
+            double boughtStock = 0;
+            double soldStock = 0;
+            double lastOpen = 0, lastclose = 0, profit = 0, avgPrice = 0;
+            System.DateTime startDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            startDate = startDate.AddSeconds(time).ToLocalTime();
+            DateTime currentDate = startDate;
+            bool buyTimeFrame = true;
+            var dontBuyTime = currentDate.Date.AddHours(15).AddMinutes(00);
+            var sellTime = currentDate.Date.AddHours(15).AddMinutes(58);
+
+            //if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv"))
+            //{
+            //    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv"))
+            //    {
+            //        //File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+            //        sw.WriteLine("currentDate" + "," + "open" + "," + "close" + "," + "dayTrade" + "," + "buyTrigger" + "," + "boughtStock" + "," + "soldStock" + "," + "profit" + "," + "close" + "," + "avgPrice" + ", " + "numberOfTrades");
+            //    }
+            //}
+
+            //if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-obarCalculation.csv"))
+            //{
+            //    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-obarCalculation.csv"))
+            //    {
+            //        //File.WriteAllText(DateTime.Today.ToString("yyyyMMdd") + "-" + reqId + "-obarCalculation.csv", time + ", " + open + ", " + close + ", " + barSize);
+            //        sw.WriteLine("time" + "," + "open" + "," + "close" + "," + "barSize");
+            //    }
+            //}
+
+            using (StreamWriter w = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv")) { }
+            var text = File.ReadAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv");
+
+            // barsize = multiple of 5 secs. eg 1min = 12
+            var per = GetOptionBarSize(reqId, time, open, close, 12);
+            if (per != "0,0,0")
+            {
+                var barSplits = per.Split(',');
+                double o = Convert.ToDouble(barSplits[0]);
+                double c = Convert.ToDouble(barSplits[1]);
+                open = o;
+                close = c;
+                var percentage = (close - open) * 100 / open;
+                if (string.IsNullOrEmpty(text))
+                {
+                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", startDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                    startDate = currentDate;
+                    lastOpen = open;
+                    lastclose = close;
+                }
+                else
+                {
+                    string[] splits = text.Split(',');
+                    //startDate = Convert.ToDateTime(splits[0]);
+                    lastOpen = Convert.ToDouble(splits[1]);
+                    lastclose = Convert.ToDouble(splits[2]);
+                    dayTrade = Convert.ToBoolean(splits[3]);
+                    buyTrigger = Convert.ToBoolean(splits[4]);
+                    boughtStock = Convert.ToDouble(splits[5]);
+                    soldStock = Convert.ToDouble(splits[6]);
+                    //profit = Convert.ToDouble(splits[7]);
+                    avgPrice = Convert.ToDouble(splits[9]);
+                    numberOfTrades = Convert.ToInt32(splits[10]);
+                }
+
+                if (percentage < -5)
+                {
+                    buyTrigger = true;
+                }
+
+                if (startDate > dontBuyTime)
+                {
+                    buyTimeFrame = false;
+                }
+
+                if (buyTrigger)
+                {
+                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                    if (buyTimeFrame && boughtStock == 0 && percentage > 0)
+                    {
+                        boughtStock = 100 * close;
+                        numberOfTrades++;
+                        avgPrice = avgPrice == 0 ? close : (avgPrice + close) / 2;
+                        File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                        Buy(reqId);
+
+                        //System.Threading.Thread.Sleep(1000);
+                        //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.Stop("SELL", 100, Math.Round(close * .85, 2)));
+                        //clientSocket.reqPositions();
+                        //clientSocket.cancelPositions();
+                    }
+
+                    if (boughtStock > 0)
+                    {
+                        if ((percentage < 0 && close > 1.05 * avgPrice) || (close < avgPrice * .90) || ((startDate > sellTime)))
+                        {
+                            soldStock = 100 * close;
+                            avgPrice = 0;
+                            //numberOfTrades = 0;
+                            dayTrade = true;
+                            buyTrigger = false;
+                            soldStockTotal = soldStock;
+                            profit = soldStock - boughtStock;
+                            boughtStockTotal = boughtStock;
+                            boughtStock = 0;
+                            soldStock = 0;
+                            File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                            Sell(reqId);
+                        }
+                    }
+                }
+
+                if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                {
+                    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                    {
+                        sw.WriteLine("startDate" + "," + "Expiration" + "," + "days" + "," + "strike" + "," + "callPut" + "," + "open" + "," + "high" + "," + "low" + "," + "close" + "," + "percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
+                    }
+                }
+
+                using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                {
+                    string expiration = "", days = "", strike = "", callPut = "";
+                    if (reqId == 1001)
+                    {
+                        expiration = ContractSamples.USOptionContract().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract().Right;
+                    }
+                    if (reqId == 1002)
+                    {
+                        expiration = ContractSamples.USOptionContract2().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract2().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract2().Right;
+                    }
+                    if (reqId == 1003)
+                    {
+                        expiration = ContractSamples.USOptionContract3().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract3().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract3().Right;
+                    }
+                    //sw.WriteLine("CurrentDateTime" + "," + "Expiration" + "," + "days" + "," + "stockValue" + "," + "strike" + "," + "callPut" + "," + "Open" + "," + "High" + "," + "Low" + "," + "Close" + "," + "Percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
+                    sw.WriteLine(startDate + "," + expiration + "," + days + "," + strike + "," + callPut + "," + open + "," + high + "," + low + "," + close + "," + (close - open) * 100 / open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStockTotal + ", " + soldStockTotal + ", " + profit + ", " + avgPrice + ", " + numberOfTrades);
+                    sw.Flush();
+                }
+            }
+        }
+
+        private void RealOptionMinTrailingSell(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
+        {
+            int numberOfTrades = 0;
+            bool buyTrigger = false;
+            bool dayTrade = false;
+            double soldStockTotal = 0, boughtStockTotal = 0;
+            double boughtStock = 0;
+            double soldStock = 0;
+            double lastOpen = 0, lastclose = 0, profit = 0, avgPrice = 0;
+            System.DateTime startDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            startDate = startDate.AddSeconds(time).ToLocalTime();
+            DateTime currentDate = startDate;
+            bool buyTimeFrame = true;
+            var dontBuyTime = currentDate.Date.AddHours(15).AddMinutes(00);
+            var sellTime = currentDate.Date.AddHours(15).AddMinutes(58);           
+
+            using (StreamWriter w = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv")) { }
+            var text = File.ReadAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv");
+            var sp = text.Split(',');
+            boughtStock = Convert.ToDouble(sp[5]);
+            // barsize = multiple of 5 secs. eg 1min = 12
+            var per = GetOptionBarSize(reqId, time, open, close, boughtStock > 0 ? 1 : 12);
+            if (per != "0,0,0")
+            {
+                var barSplits = per.Split(',');
+                double o = Convert.ToDouble(barSplits[0]);
+                double c = Convert.ToDouble(barSplits[1]);
+                open = o;
+                close = c;
+                var percentage = (close - open) * 100 / open;
+                if (string.IsNullOrEmpty(text))
+                {
+                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", startDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                    startDate = currentDate;
+                    lastOpen = open;
+                    lastclose = close;
+                }
+                else
+                {
+                    string[] splits = text.Split(',');
+                    //startDate = Convert.ToDateTime(splits[0]);
+                    lastOpen = Convert.ToDouble(splits[1]);
+                    lastclose = Convert.ToDouble(splits[2]);
+                    dayTrade = Convert.ToBoolean(splits[3]);
+                    buyTrigger = Convert.ToBoolean(splits[4]);
+                    boughtStock = Convert.ToDouble(splits[5]);
+                    soldStock = Convert.ToDouble(splits[6]);
+                    //profit = Convert.ToDouble(splits[7]);
+                    avgPrice = Convert.ToDouble(splits[9]);
+                    numberOfTrades = Convert.ToInt32(splits[10]);
+                }
+
+                if (percentage < -5)
+                {
+                    buyTrigger = true;
+                }
+
+                if (startDate > dontBuyTime)
+                {
+                    buyTimeFrame = false;
+                }
+
+                if (buyTrigger)
+                {
+                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                    if (buyTimeFrame && boughtStock == 0 && percentage > 0)
+                    {
+                        boughtStock = 100 * close;
+                        numberOfTrades++;
+                        avgPrice = avgPrice == 0 ? close : (avgPrice + close) / 2;
+                        File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                        Buy(reqId);
+
+                        //System.Threading.Thread.Sleep(1000);
+                        //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.LimitOrder("SELL", 100, Math.Round(close + .07, 2)));
+                        //clientSocket.reqPositions();
+                        //clientSocket.cancelPositions();
+                    }
+
+                    if (boughtStock > 0)
+                    {
+                        if ((percentage < 0 && close > avgPrice + 0.03) || (close < avgPrice * .90) || ((startDate > sellTime)))
+                        {
+                            soldStock = 100 * close;
+                            avgPrice = 0;
+                            //numberOfTrades = 0;
+                            dayTrade = true;
+                            buyTrigger = false;
+                            soldStockTotal = soldStock;
+                            profit = soldStock - boughtStock;
+                            boughtStockTotal = boughtStock;
+                            boughtStock = 0;
+                            soldStock = 0;
+                            File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                            Sell(reqId);
+                        }
+                    }
+                }
+
+                if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                {
+                    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                    {
+                        sw.WriteLine("startDate" + "," + "Expiration" + "," + "days" + "," + "strike" + "," + "callPut" + "," + "open" + "," + "high" + "," + "low" + "," + "close" + "," + "percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
+                    }
+                }
+
+                using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                {
+                    string expiration = "", days = "", strike = "", callPut = "";
+                    if (reqId == 1001)
+                    {
+                        expiration = ContractSamples.USOptionContract().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract().Right;
+                    }
+                    if (reqId == 1002)
+                    {
+                        expiration = ContractSamples.USOptionContract2().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract2().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract2().Right;
+                    }
+                    if (reqId == 1003)
+                    {
+                        expiration = ContractSamples.USOptionContract3().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract3().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract3().Right;
+                    }
+                    //sw.WriteLine("CurrentDateTime" + "," + "Expiration" + "," + "days" + "," + "stockValue" + "," + "strike" + "," + "callPut" + "," + "Open" + "," + "High" + "," + "Low" + "," + "Close" + "," + "Percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
+                    sw.WriteLine(startDate + "," + expiration + "," + days + "," + strike + "," + callPut + "," + open + "," + high + "," + low + "," + close + "," + (close - open) * 100 / open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStockTotal + ", " + soldStockTotal + ", " + profit + ", " + avgPrice + ", " + numberOfTrades);
+                    sw.Flush();
+                }
+            }
+        }
+
+        private void RealOptionMinLimitSell(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
+        {
+            int numberOfTrades = 0;
+            bool buyTrigger = false;
+            bool dayTrade = false;
+            double soldStockTotal = 0, boughtStockTotal = 0;
+            double boughtStock = 0;
+            double soldStock = 0;
+            double lastOpen = 0, lastclose = 0, profit = 0, avgPrice = 0;
+            System.DateTime startDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            startDate = startDate.AddSeconds(time).ToLocalTime();
+            DateTime currentDate = startDate;
+            bool buyTimeFrame = true;
+            var dontBuyTime = currentDate.Date.AddHours(15).AddMinutes(00);
+            var sellTime = currentDate.Date.AddHours(15).AddMinutes(58);
+
+            using (StreamWriter w = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv")) { }
+            var text = File.ReadAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv");
+
+            // barsize = multiple of 5 secs. eg 1min = 12
+            var per = GetOptionBarSize(reqId, time, open, close, boughtStock > 0 ? 1: 12);
+            if (per != "0,0,0")
+            {
+                var barSplits = per.Split(',');
+                double o = Convert.ToDouble(barSplits[0]);
+                double c = Convert.ToDouble(barSplits[1]);
+                open = o;
+                close = c;
+                var percentage = (close - open) * 100 / open;
+                if (string.IsNullOrEmpty(text))
+                {
+                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", startDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                    startDate = currentDate;
+                    lastOpen = open;
+                    lastclose = close;
+                }
+                else
+                {
+                    string[] splits = text.Split(',');
+                    //startDate = Convert.ToDateTime(splits[0]);
+                    lastOpen = Convert.ToDouble(splits[1]);
+                    lastclose = Convert.ToDouble(splits[2]);
+                    dayTrade = Convert.ToBoolean(splits[3]);
+                    buyTrigger = Convert.ToBoolean(splits[4]);
+
+                    //if (reqId == 1004)
+                    //{
+                    //    Contract contract = ContractSamples.USOptionContract4();
+                    //    if (File.Exists(DateTime.Today.ToString("yyyyMMdd") + "-" + contract.Symbol + "-" + contract.LastTradeDateOrContractMonth + "-" + contract.Strike + "-buyTrigger.csv"))
+                    //    {
+                    //        buyTrigger = (File.ReadAllText(DateTime.Today.ToString("yyyyMMdd") + "-" + contract.Symbol + "-" + contract.LastTradeDateOrContractMonth + "-" + contract.Strike + "-buyTrigger.csv")[0]) == '0' ? false: true;
+                    //        File.Delete(DateTime.Today.ToString("yyyyMMdd") + "-" + contract.Symbol + "-" + contract.LastTradeDateOrContractMonth + "-" + contract.Strike + "-buyTrigger.csv");
+                    //    }
+                    //}
+                    
+                    boughtStock = Convert.ToDouble(splits[5]);
+                    soldStock = Convert.ToDouble(splits[6]);
+                    //profit = Convert.ToDouble(splits[7]);
+                    avgPrice = Convert.ToDouble(splits[9]);
+                    numberOfTrades = Convert.ToInt32(splits[10]);
+                }
+
+                if (percentage < -5)
+                {
+                    buyTrigger = true;
+                }
+
+                if (startDate > dontBuyTime)
+                {
+                    buyTimeFrame = false;
+                }
+
+                if (buyTrigger)
+                {
+                    File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                    if (buyTimeFrame && boughtStock == 0 && percentage > 0)
+                    {
+                        boughtStock = 100 * close;
+                        numberOfTrades++;
+                        avgPrice = avgPrice == 0 ? close : (avgPrice + close) / 2;
+                        File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                        Buy(reqId);
+
+                        //System.Threading.Thread.Sleep(3000);
+                        //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.LimitOrder("SELL", 100, Math.Round(close + .05, 2)));
+                        //clientSocket.reqPositions();
+                        //clientSocket.cancelPositions();
+                    }
+
+                    if (boughtStock > 0)
+                    {
+                        if ((percentage < 0 && close > avgPrice + 0.05) || (close < avgPrice * .90) || ((startDate > sellTime)))
+                        {
+                            soldStock = 100 * close;
+                            avgPrice = 0;
+                            //numberOfTrades = 0;
+                            dayTrade = true;
+                            buyTrigger = false;
+                            soldStockTotal = soldStock;
+                            profit = soldStock - boughtStock;
+                            boughtStockTotal = boughtStock;
+                            boughtStock = 0;
+                            soldStock = 0;
+                            File.WriteAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv", currentDate + ", " + open + ", " + close + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStock + ", " + soldStock + ", " + profit + ", " + close + ", " + avgPrice + ", " + numberOfTrades);
+                            Sell(reqId);
+                        }
+                    }
+                }
+
+                if (!File.Exists(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                {
+                    using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                    {
+                        sw.WriteLine("startDate" + "," + "Expiration" + "," + "days" + "," + "strike" + "," + "callPut" + "," + "open" + "," + "high" + "," + "low" + "," + "close" + "," + "percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
+                    }
+                }
+
+                using (StreamWriter sw = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-omydata.csv"))
+                {
+                    string expiration = "", days = "", strike = "", callPut = "";
+                    if (reqId == 1001)
+                    {
+                        expiration = ContractSamples.USOptionContract().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract().Right;
+                    }
+                    if (reqId == 1002)
+                    {
+                        expiration = ContractSamples.USOptionContract2().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract2().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract2().Right;
+                    }
+                    if (reqId == 1003)
+                    {
+                        expiration = ContractSamples.USOptionContract3().LastTradeDateOrContractMonth;
+                        days = GetBusinessDays(DateTime.Today, Convert.ToDateTime(DateTime.ParseExact(expiration, "yyyyMMdd", CultureInfo.InvariantCulture))).ToString();
+                        strike = ContractSamples.USOptionContract3().Strike.ToString();
+                        callPut = ContractSamples.USOptionContract3().Right;
+                    }
+                    //sw.WriteLine("CurrentDateTime" + "," + "Expiration" + "," + "days" + "," + "stockValue" + "," + "strike" + "," + "callPut" + "," + "Open" + "," + "High" + "," + "Low" + "," + "Close" + "," + "Percentage" + ", " + "dayTrade" + ", " + "buyTrigger" + ", " + "boughtStock" + ", " + "soldStock" + ", " + "profit" + ", " + "avgPrice" + ", " + "numberOfTrades");
+                    sw.WriteLine(startDate + "," + expiration + "," + days + "," + strike + "," + callPut + "," + open + "," + high + "," + low + "," + close + "," + (close - open) * 100 / open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStockTotal + ", " + soldStockTotal + ", " + profit + ", " + avgPrice + ", " + numberOfTrades);
+                    sw.Flush();
+                }
+            }
         }
     }
 }
