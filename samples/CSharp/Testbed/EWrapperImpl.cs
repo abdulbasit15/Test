@@ -1398,7 +1398,7 @@ namespace Samples
             List<double> l = new List<double>();
             l.Add(open);
             l.Add(close);
-
+            
             //if (reqId == 1003)
             //{
             //    RealOptionMinTrailingSell(reqId, time, open, high, low, close, volume, WAP, count);
@@ -1707,7 +1707,7 @@ namespace Samples
                 }
             }
         }
-
+    
         private void RealOptionMinLimitSell(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
         {
             int numberOfTrades = 0;
@@ -1727,6 +1727,7 @@ namespace Samples
             using (StreamWriter w = File.AppendText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv")) { }
             var text = File.ReadAllText(currentDate.ToString("yyyyMMdd") + "-" + reqId + "-oinit.csv");
 
+            var rsi = CalculateRsi(reqId, startDate, open, close, 14);
             // barsize = multiple of 5 secs. eg 1min = 12
             var per = GetOptionBarSize(reqId, time, open, close, boughtStock > 0 ? 1: 12);
             if (per != "0,0,0")
@@ -1854,6 +1855,70 @@ namespace Samples
                     sw.Flush();
                 }
             }
+        }
+
+        public static double? CalculateRsi(int reqId, DateTime date, double open, double close, int period)
+        {
+            var difference = close - open;            
+            using (StreamWriter w = File.AppendText(date.ToString("yyyyMMdd") + "-" + reqId + "-rsiCal.csv")) { }
+            var text = File.ReadAllText(date.ToString("yyyyMMdd") + "-" + reqId + "-rsiCal.csv");
+            if (text != null)
+            {
+                text = difference.ToString();
+            }
+            else
+            {
+                text = difference.ToString() + "," + text;
+            }
+            File.WriteAllText(date.ToString("yyyyMMdd") + "-" + reqId + "-rsiCal.csv", text);
+
+
+            var previousGainLoss = text.Split(',');
+            double? rsi;
+            double sumGain = 0;
+            int gainCounter = 0;
+            double sumLoss = 0;
+            int lossCounter = 0;
+            for (int i = 0; i < previousGainLoss.Length; i++)
+            {
+                double val = Convert.ToDouble(previousGainLoss[i]);
+                if (val >= 0)
+                {
+                    if(gainCounter != period)
+                    {
+                        sumGain += val;
+                        gainCounter++;
+                    }                    
+                }
+                else
+                {
+                    if (lossCounter != period)
+                    {
+                        sumLoss += val;
+                        lossCounter++;
+                    }
+                }
+                if (gainCounter == period && lossCounter == period)
+                {
+                    break;
+                }
+            }
+
+            if (gainCounter == period && lossCounter == period)
+            {
+                sumLoss = sumLoss * -1;
+                var relativeStrength = sumGain / sumLoss;
+                if (sumGain == 0) return 0;
+                if (sumLoss == 0) return 100;
+                rsi = 100.0 - (100.0 / (1 + relativeStrength));
+                using (StreamWriter sw = File.AppendText(date.ToString("yyyyMMdd") + "-" + reqId + "-rsi.csv"))
+                {
+                    sw.WriteLine(date + "," + rsi);
+                    sw.Flush();
+                }
+                return rsi;
+            }            
+            return null;
         }
     }
 }
