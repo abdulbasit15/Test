@@ -181,6 +181,45 @@ namespace Samples
             return contract;
         }
 
+        public static Contract USStock2()
+        {
+            //! [stkcontract]
+            Contract contract = new Contract();
+            contract.Symbol = "QQQ";
+            contract.SecType = "STK";
+            contract.Currency = "USD";
+            //In the API side, NASDAQ is always defined as ISLAND in the exchange field
+            contract.Exchange = "ISLAND";
+            //! [stkcontract]
+            return contract;
+        }
+
+        public static Contract USStock3()
+        {
+            //! [stkcontract]
+            Contract contract = new Contract();
+            contract.Symbol = "AAPL";
+            contract.SecType = "STK";
+            contract.Currency = "USD";
+            //In the API side, NASDAQ is always defined as ISLAND in the exchange field
+            contract.Exchange = "ISLAND";
+            //! [stkcontract]
+            return contract;
+        }
+
+        public static Contract USStock4()
+        {
+            //! [stkcontract]
+            Contract contract = new Contract();
+            contract.Symbol = "SPY";
+            contract.SecType = "STK";
+            contract.Currency = "USD";
+            //In the API side, NASDAQ is always defined as ISLAND in the exchange field
+            contract.Exchange = "ISLAND";
+            //! [stkcontract]
+            return contract;
+        }
+
         public static Contract USStockWithPrimaryExch()
         {
             //! [stkcontractwithprimary]

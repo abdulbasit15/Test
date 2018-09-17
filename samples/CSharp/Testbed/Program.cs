@@ -410,7 +410,7 @@ namespace Samples
             /*** Requesting historical data ***/
             //! [reqhistoricaldata]
             String queryTime = DateTime.Now.ToString("yyyyMMdd HH:mm:ss");
-            client.reqHistoricalData(1001, ContractSamples.USStock(), null, "3 D", "1 min", "MIDPOINT", 1, 1, true, null);
+            client.reqHistoricalData(1001, ContractSamples.USStock(), null, "1 Y", "1 min", "MIDPOINT", 1, 1, false, null);
             //client.reqHistoricalData(4002, ContractSamples.EuropeanStock(), queryTime, "10 D", "1 min", "TRADES", 1, 1, false, null);
             //! [reqhistoricaldata]
             //Thread.Sleep(2000);
