@@ -65,17 +65,17 @@ namespace Samples
             /**************************************************************************************/
             /*** Real time market data operations  - Streamed, Frozen, Delayed or Delayed-Frozen***/
             /**************************************************************************************/
-            //marketDataType(client);
-
-            /**********************************************************/
-            /*** Real time market data operations  - Real Time Bars ***/
-            /**********************************************************/
-            //realTimeBars(client);
+            //marketDataType(client);            
 
             /**********************************/
             /*** Historical Data operations ***/
             /**********************************/
             historicalDataRequests(client);
+
+            /**********************************************************/
+            /*** Real time market data operations  - Real Time Bars ***/
+            /**********************************************************/
+            //realTimeBars(client);
 
             /*************************/
             /*** Options Specifics ***/
@@ -383,7 +383,23 @@ namespace Samples
         {
             /*** Requesting real time bars ***/
             //! [reqrealtimebars]
-            client.reqRealTimeBars(1001, ContractSamples.USStockAtSmart(), 5, "MIDPOINT", true, null);
+            #region Realtime with today's RSI
+            
+            String queryTime = DateTime.Now.ToString("yyyyMMdd HH:mm:ss");
+            client.reqHistoricalData(1001, ContractSamples.USStock(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1002, ContractSamples.USStock2(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1003, ContractSamples.USStock3(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
+            Thread.Sleep(10000);
+            client.cancelHistoricalData(1001);
+            client.cancelHistoricalData(1002);
+            client.cancelHistoricalData(1003);
+
+            client.reqRealTimeBars(1001, ContractSamples.USStock(), 5, "MIDPOINT", true, null);
+            client.reqRealTimeBars(1002, ContractSamples.USStock2(), 5, "MIDPOINT", true, null);
+            client.reqRealTimeBars(1003, ContractSamples.USStock3(), 5, "MIDPOINT", true, null);
+
+            #endregion
+
             //client.reqRealTimeBars(1002, ContractSamples.USOptionContract2(), 5, "MIDPOINT", true, null);
             //client.reqRealTimeBars(1003, ContractSamples.USOptionContract3(), 5, "MIDPOINT", true, null);
 
@@ -410,12 +426,14 @@ namespace Samples
             /*** Requesting historical data ***/
             //! [reqhistoricaldata]
             String queryTime = DateTime.Now.ToString("yyyyMMdd HH:mm:ss");
-            client.reqHistoricalData(1001, ContractSamples.USStock(), null, "1 Y", "1 min", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1001, ContractSamples.USStock(), queryTime, "9 M", "1 min", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1002, ContractSamples.USStock2(), queryTime, "9 M", "1 min", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1003, ContractSamples.USStock3(), queryTime, "9 M", "1 min", "MIDPOINT", 1, 1, false, null);
             //client.reqHistoricalData(4002, ContractSamples.EuropeanStock(), queryTime, "10 D", "1 min", "TRADES", 1, 1, false, null);
             //! [reqhistoricaldata]
             //Thread.Sleep(2000);
             /*** Canceling historical data requests ***/
-            //client.cancelHistoricalData(4001);
+            //client.cancelHistoricalData(1001);
             //client.cancelHistoricalData(4002);
         }
 

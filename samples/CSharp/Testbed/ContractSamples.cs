@@ -181,6 +181,38 @@ namespace Samples
             return contract;
         }
 
+        public static Contract USOptionContract()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "SPY";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180928";
+            contract.Strike = 290;
+            contract.Right = "C";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
+        public static Contract USOptionContractP()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "SPY";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180928";
+            contract.Strike = 291;
+            contract.Right = "P";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
         public static Contract USStock2()
         {
             //! [stkcontract]
@@ -191,6 +223,38 @@ namespace Samples
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
             contract.Exchange = "ISLAND";
             //! [stkcontract]
+            return contract;
+        }
+
+        public static Contract USOptionContract2()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "QQQ";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180928";
+            contract.Strike = 183;
+            contract.Right = "C";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
+        public static Contract USOptionContract2P()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "QQQ";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180928";
+            contract.Strike = 184;
+            contract.Right = "P";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
             return contract;
         }
 
@@ -207,6 +271,38 @@ namespace Samples
             return contract;
         }
 
+        public static Contract USOptionContract3()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "AAPL";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180928";
+            contract.Strike = 220;
+            contract.Right = "C";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
+        public static Contract USOptionContract3P()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "AAPL";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180928";
+            contract.Strike = 222.5;
+            contract.Right = "P";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
         public static Contract USStock4()
         {
             //! [stkcontract]
@@ -217,6 +313,38 @@ namespace Samples
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
             contract.Exchange = "ISLAND";
             //! [stkcontract]
+            return contract;
+        }
+
+        public static Contract USOptionContract4()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "AAPL";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180921";
+            contract.Strike = 221;
+            contract.Right = "C";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
+            return contract;
+        }
+
+        public static Contract USOptionContract4P()
+        {
+            //! [optcontract_us]
+            Contract contract = new Contract();
+            contract.Symbol = "AAPL";
+            contract.SecType = "OPT";
+            contract.Exchange = "SMART";
+            contract.Currency = "USD";
+            contract.LastTradeDateOrContractMonth = "20180921";
+            contract.Strike = 221;
+            contract.Right = "P";
+            contract.Multiplier = "100";
+            //! [optcontract_us]
             return contract;
         }
 
@@ -243,70 +371,6 @@ namespace Samples
             contract.SecType = "STK";
             contract.Currency = "USD";
             contract.Exchange = "SMART";
-            return contract;
-        }
-
-        public static Contract USOptionContract()
-        {
-            //! [optcontract_us]
-            Contract contract = new Contract();
-            contract.Symbol = "TSLA";
-            contract.SecType = "OPT";
-            contract.Exchange = "SMART";
-            contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180907";
-            contract.Strike = 295;
-            contract.Right = "P";
-            contract.Multiplier = "100";
-            //! [optcontract_us]
-            return contract;
-        }
-
-        public static Contract USOptionContract2()
-        {
-            //! [optcontract_us]
-            Contract contract = new Contract();
-            contract.Symbol = "TSLA";
-            contract.SecType = "OPT";
-            contract.Exchange = "SMART";
-            contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180907";
-            contract.Strike = 297.5;
-            contract.Right = "P";
-            contract.Multiplier = "100";
-            //! [optcontract_us]
-            return contract;
-        }
-
-        public static Contract USOptionContract3()
-        {
-            //! [optcontract_us]
-            Contract contract = new Contract();
-            contract.Symbol = "QQQ";
-            contract.SecType = "OPT";
-            contract.Exchange = "SMART";
-            contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180907";
-            contract.Strike = 186;
-            contract.Right = "C";
-            contract.Multiplier = "100";
-            //! [optcontract_us]
-            return contract;
-        }
-
-        public static Contract USOptionContract4()
-        {
-            //! [optcontract_us]
-            Contract contract = new Contract();
-            contract.Symbol = "SPY";
-            contract.SecType = "OPT";
-            contract.Exchange = "SMART";
-            contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20180813";
-            contract.Strike = 286;
-            contract.Right = "C";
-            contract.Multiplier = "100";
-            //! [optcontract_us]
             return contract;
         }
 
