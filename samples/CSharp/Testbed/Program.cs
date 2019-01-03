@@ -387,17 +387,17 @@ namespace Samples
             
             String queryTime = DateTime.Now.ToString("yyyyMMdd HH:mm:ss");
             client.reqHistoricalData(1001, ContractSamples.USStock(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
-            //client.reqHistoricalData(1002, ContractSamples.USStock2(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1002, ContractSamples.USStock2(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
             client.reqHistoricalData(1003, ContractSamples.USStock3(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
             //client.reqHistoricalData(1004, ContractSamples.USStock4(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
             Thread.Sleep(10000);
             client.cancelHistoricalData(1001);
-            //client.cancelHistoricalData(1002);
+            client.cancelHistoricalData(1002);
             client.cancelHistoricalData(1003);
             //client.cancelHistoricalData(1004);
 
             client.reqRealTimeBars(1001, ContractSamples.USStock(), 5, "MIDPOINT", true, null);
-            //client.reqRealTimeBars(1002, ContractSamples.USStock2(), 5, "MIDPOINT", true, null);
+            client.reqRealTimeBars(1002, ContractSamples.USStock2(), 5, "MIDPOINT", true, null);
             client.reqRealTimeBars(1003, ContractSamples.USStock3(), 5, "MIDPOINT", true, null);
             //client.reqRealTimeBars(1004, ContractSamples.USStock4(), 5, "MIDPOINT", true, null);
 
@@ -429,9 +429,10 @@ namespace Samples
             /*** Requesting historical data ***/
             //! [reqhistoricaldata]
             String queryTime = DateTime.Now.ToString("yyyyMMdd HH:mm:ss");
-            client.reqHistoricalData(1001, ContractSamples.USStock(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
-            //client.reqHistoricalData(1002, ContractSamples.USStock2(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
-            client.reqHistoricalData(1003, ContractSamples.USStock3(), queryTime, "1 D", "1 min", "MIDPOINT", 1, 1, false, null);
+            //client.reqHistoricalData(1001, ContractSamples.USStock(), queryTime, "1 Y", "1 Day", "MIDPOINT", 1, 1, false, null);
+            //client.reqHistoricalData(1002, ContractSamples.USStock2(), queryTime, "1 Y", "1 day", "MIDPOINT", 1, 1, false, null);
+            client.reqHistoricalData(1003, ContractSamples.USStock3(), queryTime, "3 Y", "1 day", "MIDPOINT", 1, 1, false, null);
+            //client.reqHistoricalData(1004, ContractSamples.USStock4(), queryTime, "1 Y", "1 day", "MIDPOINT", 1, 1, false, null);
             //client.reqHistoricalData(4002, ContractSamples.EuropeanStock(), queryTime, "10 D", "1 min", "TRADES", 1, 1, false, null);
             //! [reqhistoricaldata]
             //Thread.Sleep(2000);

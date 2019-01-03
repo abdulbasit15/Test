@@ -1673,7 +1673,14 @@ namespace Samples
             CalculateRsi(reqId, dateTime, bar.Open, bar.Close, 14);
             #endregion
 
+            //#region RSI Backtest
             //RSIBackTest(reqId, bar);
+            //#endregion
+
+            #region Only RSI data
+            //DateTime currentDate = DateTime.ParseExact(bar.Time, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            //var rsi = CalculateRsi(reqId, currentDate, bar.Open, bar.Close, 14, true);
+            #endregion
 
             //SingleBuy(reqId, bar);
             //RealOptionRSIHistory(reqId, bar.Time, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, bar.WAP, 14);
@@ -1904,7 +1911,7 @@ namespace Samples
 
         private void RealOptionRSI(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
         {
-            bool buyCall = true;
+            bool buyCall = false;
             bool buyPut = true;
             int numberOfTrades = 0;
             bool buyTrigger = false;                      
@@ -1975,8 +1982,8 @@ namespace Samples
                     put_soldStock = Convert.ToDouble(splits[13]);
                     //put_profit = Convert.ToInt32(splits[14]);
                     put_avgPrice = Convert.ToDouble(splits[15]);
-                    buyCall = Convert.ToBoolean(splits[16]);
-                    buyPut = Convert.ToBoolean(splits[17]);
+                    //buyCall = Convert.ToBoolean(splits[16]);
+                    //buyPut = Convert.ToBoolean(splits[17]);
                 }
 
                 if (rsi > 0 && rsi < 30)
@@ -2059,11 +2066,11 @@ namespace Samples
                                       rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
                                       put_avgPrice + "," + buyCall + "," + buyPut);
                         PutBuy(reqId);
-                    }                    
+                    }
 
                     if (put_soldStock > 0)
                     {
-                        if ((rsi < 50 && rsi < lastRsi /*&& close > avgPrice + 0.05*/) || (close < avgPrice * .997) || ((currentDate > sellTime)))
+                        if ((rsi < 30 && rsi < lastRsi /*&& close > avgPrice + 0.05*/) || (close < avgPrice * .99) || ((currentDate > sellTime)))
                         {
                             put_boughtStock = 100 * close;
                             put_avgPrice = 0;
@@ -2170,7 +2177,7 @@ namespace Samples
 
                         using (StreamWriter sw = File.AppendText(fileRsi))
                         {
-                            sw.WriteLine(date + "," + open + "," + close + "," + rsi + "," + (previousGains / 14) + "," + ((previousLosses * -1) / 14) + "," + relativeStrength);
+                            sw.WriteLine(date + "," + open + "," + close + "," + ((close - open) / open) * 100 + "," + rsi + "," + (previousGains / 14) + "," + ((previousLosses * -1) / 14) + "," + relativeStrength);
                             sw.Flush();
                         }
                         break;
@@ -2199,7 +2206,7 @@ namespace Samples
                 rsi = 100.0 - (100.0 / (1 + relativeStrength));
                 using (StreamWriter sw = File.AppendText(fileRsi))
                 {
-                    sw.WriteLine(date + "," + open + "," + close + "," + rsi + "," + gainAvg + "," + lossAvg + "," + relativeStrength);
+                    sw.WriteLine(date + "," + open + "," + close + "," + ((close - open) / open) * 100 + "," + rsi + "," + gainAvg + "," + lossAvg + "," + relativeStrength);
                     sw.Flush();
                 }
                 File.WriteAllText(fileAvgCal, gainAvg + "," + lossAvg);
@@ -2269,8 +2276,8 @@ namespace Samples
         {
             if (reqId == 1001)
             {
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("SELL", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("BUY", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("SELL", 100));
+                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("BUY", 10));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("SELL", 100));
             }
             if (reqId == 1002)
@@ -2297,8 +2304,8 @@ namespace Samples
         {
             if (reqId == 1001)
             {
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("BUY", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("SELL", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("BUY", 100));
+                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("SELL", 10));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("BUY", 100));
             }
             if (reqId == 1002)

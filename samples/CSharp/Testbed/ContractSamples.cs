@@ -172,11 +172,11 @@ namespace Samples
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "QQQ";
+            contract.Symbol = "SPY";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
-            contract.Exchange = "ISLAND";
+            contract.Exchange = "SMART";
             //! [stkcontract]
             return contract;
         }
@@ -185,12 +185,12 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "QQQ";
+            contract.Symbol = "SPY";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20181005";
-            contract.Strike = 186;
+            contract.LastTradeDateOrContractMonth = "20190104";
+            contract.Strike = 246;
             contract.Right = "C";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -201,12 +201,12 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "QQQ";
+            contract.Symbol = "SPY";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20181005";
-            contract.Strike = 187;
+            contract.LastTradeDateOrContractMonth = "20190104";
+            contract.Strike = 247;
             contract.Right = "P";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -217,7 +217,7 @@ namespace Samples
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "BAC";
+            contract.Symbol = "QQQ";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
@@ -230,12 +230,12 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "BAC";
+            contract.Symbol = "QQQ";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20181005";
-            contract.Strike = 30;
+            contract.LastTradeDateOrContractMonth = "20190104";
+            contract.Strike = 151;
             contract.Right = "C";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -246,12 +246,12 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "BAC";
+            contract.Symbol = "QQQ";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20181005";
-            contract.Strike = 30.5;
+            contract.LastTradeDateOrContractMonth = "20190104";
+            contract.Strike = 152;
             contract.Right = "P";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -279,8 +279,8 @@ namespace Samples
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20181005";
-            contract.Strike = 230;
+            contract.LastTradeDateOrContractMonth = "20190104";
+            contract.Strike = 144;
             contract.Right = "C";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -295,8 +295,8 @@ namespace Samples
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20181005";
-            contract.Strike = 232.5;
+            contract.LastTradeDateOrContractMonth = "20190104";
+            contract.Strike = 145;
             contract.Right = "P";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -307,7 +307,7 @@ namespace Samples
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "FB";
+            contract.Symbol = "AMZN";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
