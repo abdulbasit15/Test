@@ -189,8 +189,8 @@ namespace Samples
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20190104";
-            contract.Strike = 246;
+            contract.LastTradeDateOrContractMonth = "20190510";
+            contract.Strike = 288;
             contract.Right = "C";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -205,8 +205,8 @@ namespace Samples
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
-            contract.LastTradeDateOrContractMonth = "20190104";
-            contract.Strike = 247;
+            contract.LastTradeDateOrContractMonth = "20190510";
+            contract.Strike = 289;
             contract.Right = "P";
             contract.Multiplier = "100";
             //! [optcontract_us]
@@ -320,7 +320,7 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "FB";
+            contract.Symbol = "AMZN";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";

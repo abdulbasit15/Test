@@ -1669,12 +1669,12 @@ namespace Samples
         public virtual void historicalData(int reqId, Bar bar)
         {
             #region RSI for realtime data
-            DateTime dateTime = DateTime.ParseExact(bar.Time, "yyyyMMdd  HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-            CalculateRsi(reqId, dateTime, bar.Open, bar.Close, 14);
+            //DateTime dateTime = DateTime.ParseExact(bar.Time, "yyyyMMdd  HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+            //CalculateRsi(reqId, dateTime, bar.Open, bar.Close, 14);
             #endregion
 
             //#region RSI Backtest
-            //RSIBackTest(reqId, bar);
+            RSIBackTest(reqId, bar);
             //#endregion
 
             #region Only RSI data
@@ -1712,7 +1712,7 @@ namespace Samples
             Console.WriteLine("Stock Historical. " + reqId + " - Time: " + bar.Time + ", Open: " + bar.Open + ", High: " + bar.High + ", Low: " + bar.Low + ", Close: " + bar.Close + ", Volume: " + bar.Volume + ", Count: " + bar.Count + ", WAP: " + bar.WAP);
         }
 
-        private void RSIBackTest(int reqId, Bar bar)
+        private void RSIBackTestOld(int reqId, Bar bar)
         {
             bool buyCall = true;
             bool buyPut = true;
@@ -1724,7 +1724,7 @@ namespace Samples
             double soldStock = 0;
             double lastRsi = -1;
             double profit = 0, avgPrice = 0;
-            bool tradeTimeFrame = true;            
+            bool tradeTimeFrame = true;
 
             // for put
             bool sellTrigger = false;
@@ -1737,7 +1737,7 @@ namespace Samples
 
             DateTime currentDate = DateTime.ParseExact(bar.Time, "yyyyMMdd  HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
             var startTime = currentDate.Date.AddHours(9).AddMinutes(30);
-            var tradeStartTime = currentDate.Date.AddHours(10).AddMinutes(00);            
+            var tradeStartTime = currentDate.Date.AddHours(10).AddMinutes(00);
             var dontBuyTime = currentDate.Date.AddHours(15).AddMinutes(00);
             var sellTime = currentDate.Date.AddHours(15).AddMinutes(58);
 
@@ -1754,8 +1754,8 @@ namespace Samples
             {
                 File.WriteAllText(reqId + "-init.csv",
                                       bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
-                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," + 
-                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," + 
+                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
                                       put_avgPrice + "," + buyCall + "," + buyPut);
             }
             else
@@ -1815,7 +1815,9 @@ namespace Samples
 
                 if (boughtStock > 0)
                 {
-                    if ((rsi > 40 && rsi < lastRsi /*&& bar.Close > avgPrice * 1.05*/) || (bar.Close < avgPrice * .997) || (currentDate > sellTime))
+                    if ((rsi > 60 && rsi < lastRsi /*&& bar.Close > avgPrice * 1.05*/) 
+                        //|| (bar.Close < avgPrice * .997) 
+                        || (currentDate > sellTime))
                     {
                         soldStock = 1 * bar.Close;
                         //numberOfTrades = 0;
@@ -1872,7 +1874,7 @@ namespace Samples
                         //numberOfTrades = 0;
                         dayTrade = true;
                         sellTrigger = false;
-                        put_boughtStockTotal = put_boughtStock;                        
+                        put_boughtStockTotal = put_boughtStock;
                         put_profit = put_soldStock - put_boughtStock;
                         buyPut = put_profit > 0 ? true : false;
                         put_soldStockTotal = put_soldStock;
@@ -1891,19 +1893,232 @@ namespace Samples
             {
                 using (StreamWriter sw = File.AppendText(reqId + "-mydata.csv"))
                 {
-                    sw.WriteLine("CurrentDateTime" + ",Open" + ",High" + ",Low" + ",Close" + 
-                                 ",Percentage" + ",dayTrade" + ",buyTrigger" + ",boughtStock" + ",soldStock" + 
+                    sw.WriteLine("CurrentDateTime" + ",Open" + ",High" + ",Low" + ",Close" +
+                                 ",Percentage" + ",dayTrade" + ",buyTrigger" + ",boughtStock" + ",soldStock" +
                                  ",profit" + ",avgPrice" + ",numberOfTrades" + ",RSI" + ",sellTrigger" +
-                                 ",put_boughtStock" + ",put_soldStock" +",put_profit" + ",put_avgPrice" + ",buyCall" +
+                                 ",put_boughtStock" + ",put_soldStock" + ",put_profit" + ",put_avgPrice" + ",buyCall" +
                                  ",buyPut");
                 }
             }
             using (StreamWriter sw = File.AppendText(reqId + "-mydata.csv"))
             {
-                sw.WriteLine(bar.Time + "," + bar.Open + "," + bar.High + "," + bar.Low + "," + bar.Close + "," + 
-                             (bar.Close - bar.Open) * 100 / bar.Open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStockTotal + ", " + soldStockTotal + ", " + 
-                             profit + ", " + avgPrice + ", " + numberOfTrades + "," + rsi + "," + sellTrigger + "," + 
-                             put_boughtStockTotal + "," + put_soldStockTotal + "," + put_profit + "," + put_avgPrice + "," + buyCall + "," + 
+                sw.WriteLine(bar.Time + "," + bar.Open + "," + bar.High + "," + bar.Low + "," + bar.Close + "," +
+                             (bar.Close - bar.Open) * 100 / bar.Open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStockTotal + ", " + soldStockTotal + ", " +
+                             profit + ", " + avgPrice + ", " + numberOfTrades + "," + rsi + "," + sellTrigger + "," +
+                             put_boughtStockTotal + "," + put_soldStockTotal + "," + put_profit + "," + put_avgPrice + "," + buyCall + "," +
+                             buyPut);
+                sw.Flush();
+            }
+        }
+
+        private void RSIBackTest(int reqId, Bar bar)
+        {
+            bool buyCall = true;
+            bool buyPut = true;
+            int numberOfTrades = 0;
+            bool buyTrigger = false;
+            bool dayTrade = false;
+            double soldStockTotal = 0, boughtStockTotal = 0;
+            double boughtStock = 0;
+            double soldStock = 0;
+            double lastRsi = -1;
+            double profit = 0, avgPrice = 0;
+            bool tradeTimeFrame = true;
+
+            // for put
+            bool sellTrigger = false;
+            double put_boughtStock = 0;
+            double put_avgPrice = 0;
+            double put_soldStock = 0;
+            double put_boughtStockTotal = 0;
+            double put_soldStockTotal = 0;
+            double put_profit = 0;
+
+            DateTime currentDate = DateTime.ParseExact(bar.Time, "yyyyMMdd  HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+            var startTime = currentDate.Date.AddHours(9).AddMinutes(30);
+            var tradeStartTime = currentDate.Date.AddHours(10).AddMinutes(00);
+            var dontBuyTime = currentDate.Date.AddHours(15).AddMinutes(00);
+            var sellTime = currentDate.Date.AddHours(15).AddMinutes(58);
+
+            var rsi = CalculateRsi(reqId, currentDate, bar.Open, bar.Close, 14, true);
+
+            if (currentDate == startTime && File.Exists(reqId + "-init.csv"))
+            {
+                File.Delete(reqId + "-init.csv");
+            }
+
+            using (StreamWriter w = File.AppendText(reqId + "-init.csv")) { }
+            var text = File.ReadAllText(reqId + "-init.csv");
+            if (string.IsNullOrEmpty(text))
+            {
+                File.WriteAllText(reqId + "-init.csv",
+                                      bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
+                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
+                                      put_avgPrice + "," + buyCall + "," + buyPut);
+            }
+            else
+            {
+                string[] splits = text.Split(',');
+                //startDate = DateTime.ParseExact(splits[0], "yyyyMMdd  HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                //open = Convert.ToDouble(splits[1]);
+                //close = Convert.ToDouble(splits[2]);
+                dayTrade = Convert.ToBoolean(splits[3]);
+                buyTrigger = Convert.ToBoolean(splits[4]);
+
+                boughtStockTotal = boughtStock = Convert.ToDouble(splits[5]);
+                soldStock = Convert.ToDouble(splits[6]);
+                //profit = Convert.ToDouble(splits[7]);
+                avgPrice = Convert.ToDouble(splits[8]);
+                numberOfTrades = Convert.ToInt32(splits[9]);
+
+                lastRsi = Convert.ToDouble(splits[10]);
+                sellTrigger = Convert.ToBoolean(splits[11]);
+                put_boughtStock = Convert.ToDouble(splits[12]);
+                put_soldStockTotal = put_soldStock = Convert.ToDouble(splits[13]);
+                //put_profit = Convert.ToDouble(splits[14]);
+
+                put_avgPrice = Convert.ToDouble(splits[15]);
+                //buyCall = Convert.ToBoolean(splits[16]);
+                //buyPut = Convert.ToBoolean(splits[17]);
+            }
+
+            bool callBuyRsiTrigger = rsi < 30;
+            bool callBuyRsiCondition = callBuyRsiTrigger && rsi < lastRsi;
+            bool callStopLossCondition = bar.Close < avgPrice * .997; // .3%
+            bool callSellRsiTrigger = rsi > 60;
+            bool callSellRsiCondition = callSellRsiTrigger && rsi < lastRsi;
+
+            bool putBuyRsiTrigger = rsi < 70;
+            bool putBuyRsiCondition = putBuyRsiTrigger && rsi < lastRsi;
+            bool putStopLossCondition = bar.Close > put_avgPrice * 1.003; // .3%
+            bool putSellRsiTrigger = rsi < 40;
+            bool putlSellRsiCondition = putSellRsiTrigger && rsi < lastRsi;
+
+            if (currentDate < tradeStartTime || currentDate > dontBuyTime)
+            {
+                tradeTimeFrame = false;
+            }
+            else if (rsi > 0 && callBuyRsiTrigger)
+            {
+                buyTrigger = true;
+            }
+
+            if (buyTrigger && buyCall)
+            {
+                File.WriteAllText(reqId + "-init.csv",
+                                      bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
+                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
+                                      put_avgPrice + "," + buyCall + "," + buyPut);
+                // dayTrade
+                if (tradeTimeFrame && boughtStock == 0 && callBuyRsiCondition /*> lastRsi*/)
+                {
+                    boughtStock = 1 * bar.Close;
+                    numberOfTrades++;
+                    avgPrice = avgPrice == 0 ? bar.Close : (avgPrice + bar.Close) / 2;
+                    File.WriteAllText(reqId + "-init.csv",
+                                      bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
+                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
+                                      put_avgPrice + "," + buyCall + "," + buyPut);
+                }
+
+                if (boughtStock > 0)
+                {
+                    if ((callSellRsiCondition /*&& bar.Close > avgPrice * 1.05*/)
+                        //|| callStopLossCondition //bar.Close < avgPrice * .997;
+                        || (currentDate > sellTime))
+                    {
+                        soldStock = 1 * bar.Close;
+                        //numberOfTrades = 0;
+                        dayTrade = true;
+                        buyTrigger = false;
+                        soldStockTotal = soldStock;
+                        profit = soldStock - boughtStock;
+                        buyCall = profit > 0 ? true : false;
+                        boughtStockTotal = boughtStock;
+                        boughtStock = 0;
+                        soldStock = 0;
+                        avgPrice = 0;
+                        File.WriteAllText(reqId + "-init.csv",
+                                      bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
+                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
+                                      put_avgPrice + "," + buyCall + "," + buyPut);
+                    }
+                }
+            }
+
+            if (rsi > 0 && putBuyRsiTrigger)
+            {
+                sellTrigger = true;
+            }
+
+            if (sellTrigger && buyPut)
+            {
+                File.WriteAllText(reqId + "-init.csv",
+                                  bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
+                                  boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                  rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
+                                  put_avgPrice + "," + buyCall + "," + buyPut);
+
+                if (tradeTimeFrame && put_soldStock == 0 && putBuyRsiCondition)
+                {
+                    put_soldStock = 1 * bar.Close;
+                    numberOfTrades++;
+                    put_avgPrice = put_avgPrice == 0 ? bar.Close : (put_avgPrice + bar.Close) / 2;
+
+                    File.WriteAllText(reqId + "-init.csv",
+                                      bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
+                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
+                                      put_avgPrice + "," + buyCall + "," + buyPut);
+                }
+
+                if (put_soldStock > 0)
+                {
+                    if ((putlSellRsiCondition /*&& close > avgPrice + 0.05*/)
+                        || putStopLossCondition
+                        || ((currentDate > sellTime)))
+                    {
+                        put_boughtStock = 1 * bar.Close;
+                        put_avgPrice = 0;
+                        //numberOfTrades = 0;
+                        dayTrade = true;
+                        sellTrigger = false;
+                        put_boughtStockTotal = put_boughtStock;
+                        put_profit = put_soldStock - put_boughtStock;
+                        buyPut = put_profit > 0 ? true : false;
+                        put_soldStockTotal = put_soldStock;
+                        put_boughtStock = 0;
+                        put_soldStock = 0;
+                        File.WriteAllText(reqId + "-init.csv",
+                                      bar.Time + "," + bar.Open + "," + bar.Close + "," + dayTrade + "," + buyTrigger + "," +
+                                      boughtStock + "," + soldStock + "," + profit + "," + avgPrice + "," + numberOfTrades + "," +
+                                      rsi + "," + sellTrigger + "," + put_boughtStock + "," + put_soldStock + "," + put_profit + "," +
+                                      put_avgPrice + "," + buyCall + "," + buyPut);
+                    }
+                }
+            }
+
+            if (!File.Exists(reqId + "-mydata.csv"))
+            {
+                using (StreamWriter sw = File.AppendText(reqId + "-mydata.csv"))
+                {
+                    sw.WriteLine("CurrentDateTime" + ",Open" + ",High" + ",Low" + ",Close" +
+                                 ",Percentage" + ",dayTrade" + ",buyTrigger" + ",boughtStock" + ",soldStock" +
+                                 ",profit" + ",avgPrice" + ",numberOfTrades" + ",RSI" + ",sellTrigger" +
+                                 ",put_boughtStock" + ",put_soldStock" + ",put_profit" + ",put_avgPrice" + ",buyCall" +
+                                 ",buyPut");
+                }
+            }
+            using (StreamWriter sw = File.AppendText(reqId + "-mydata.csv"))
+            {
+                sw.WriteLine(bar.Time + "," + bar.Open + "," + bar.High + "," + bar.Low + "," + bar.Close + "," +
+                             (bar.Close - bar.Open) * 100 / bar.Open + ", " + dayTrade + ", " + buyTrigger + ", " + boughtStockTotal + ", " + soldStockTotal + ", " +
+                             profit + ", " + avgPrice + ", " + numberOfTrades + "," + rsi + "," + sellTrigger + "," +
+                             put_boughtStockTotal + "," + put_soldStockTotal + "," + put_profit + "," + put_avgPrice + "," + buyCall + "," +
                              buyPut);
                 sw.Flush();
             }
@@ -1911,8 +2126,8 @@ namespace Samples
 
         private void RealOptionRSI(int reqId, long time, double open, double high, double low, double close, long volume, double WAP, int count)
         {
-            bool buyCall = false;
-            bool buyPut = true;
+            bool buyCall = true;
+            bool buyPut = false;
             int numberOfTrades = 0;
             bool buyTrigger = false;                      
             bool dayTrade = false;
@@ -2019,7 +2234,7 @@ namespace Samples
 
                     if (boughtStock > 0)
                     {
-                        if ((rsi > 50 && rsi < lastRsi /*&& close > avgPrice + 0.05*/) || (close < avgPrice * .90) || ((currentDate > sellTime)))
+                        if ((rsi > 60 && rsi < lastRsi /*&& close > avgPrice + 0.05*/) || (close < avgPrice * .90) || ((currentDate > sellTime)))
                         {
                             soldStock = 100 * close;
                             avgPrice = 0;
@@ -2221,25 +2436,25 @@ namespace Samples
             if (reqId == 1001)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("BUY", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("BUY", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("BUY", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("SELL", 100));
             }
             if (reqId == 1002)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock2(), OrderSamples.MarketOrder("BUY", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract2(), OrderSamples.MarketOrder("BUY", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract2(), OrderSamples.MarketOrder("BUY", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract2P(), OrderSamples.MarketOrder("SELL", 100));
             }
             if (reqId == 1003)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock3(), OrderSamples.MarketOrder("BUY", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3(), OrderSamples.MarketOrder("BUY", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3(), OrderSamples.MarketOrder("BUY", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3P(), OrderSamples.MarketOrder("SELL", 100));
             }
             if (reqId == 1004)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock4(), OrderSamples.MarketOrder("BUY", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4(), OrderSamples.MarketOrder("BUY", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4(), OrderSamples.MarketOrder("BUY", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4P(), OrderSamples.MarketOrder("SELL", 100));
             }
         }
@@ -2249,25 +2464,25 @@ namespace Samples
             if (reqId == 1001)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("SELL", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("SELL", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("SELL", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("BUY", 100));
             }
             if (reqId == 1002)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock2(), OrderSamples.MarketOrder("SELL", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract2(), OrderSamples.MarketOrder("SELL", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract2(), OrderSamples.MarketOrder("SELL", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract2P(), OrderSamples.MarketOrder("BUY", 100));
             }
             if (reqId == 1003)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock3(), OrderSamples.MarketOrder("SELL", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3(), OrderSamples.MarketOrder("SELL", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3(), OrderSamples.MarketOrder("SELL", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract3P(), OrderSamples.MarketOrder("BUY", 100));
             }
             if (reqId == 1004)
             {
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock4(), OrderSamples.MarketOrder("SELL", 100));
-                clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4(), OrderSamples.MarketOrder("SELL", 100));
+                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4(), OrderSamples.MarketOrder("SELL", 100));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract4P(), OrderSamples.MarketOrder("BUY", 100));
             }
         }
@@ -2276,7 +2491,7 @@ namespace Samples
         {
             if (reqId == 1001)
             {
-                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("SELL", 100));
+                clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("SELL", 100));
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("BUY", 10));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("SELL", 100));
             }
@@ -2304,7 +2519,7 @@ namespace Samples
         {
             if (reqId == 1001)
             {
-                //clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("BUY", 100));
+                clientSocket.placeOrder(nextOrderId++, ContractSamples.USStock(), OrderSamples.MarketOrder("BUY", 100));
                 clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContractP(), OrderSamples.MarketOrder("SELL", 10));
                 //clientSocket.placeOrder(nextOrderId++, ContractSamples.USOptionContract(), OrderSamples.MarketOrder("BUY", 100));
             }
