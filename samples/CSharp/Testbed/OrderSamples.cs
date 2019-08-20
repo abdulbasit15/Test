@@ -62,6 +62,7 @@ namespace Samples
             order.Action = action;
             order.OrderType = "MKT";
             order.TotalQuantity = quantity;
+            order.OutsideRth = true;
             //! [market]
             return order;
         }
@@ -351,6 +352,7 @@ namespace Samples
             order.OrderType = "LMT";
             order.TotalQuantity = quantity;
             order.LmtPrice = limitPrice;
+            order.OutsideRth = true;
             // ! [limitorder]
             return order;
         }

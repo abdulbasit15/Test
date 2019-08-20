@@ -172,11 +172,11 @@ namespace Samples
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "SPY";
+            contract.Symbol = "AAPL";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
-            contract.Exchange = "SMART";
+            contract.Exchange = "ISLAND";
             //! [stkcontract]
             return contract;
         }
@@ -217,7 +217,7 @@ namespace Samples
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "QQQ";
+            contract.Symbol = "FB";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
@@ -262,7 +262,7 @@ namespace Samples
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "AAPL";
+            contract.Symbol = "TSLA";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
@@ -307,7 +307,7 @@ namespace Samples
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "AMZN";
+            contract.Symbol = "TQQQ";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
