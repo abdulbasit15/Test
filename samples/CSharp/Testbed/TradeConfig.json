@@ -1,0 +1,17 @@
+{
+	"realtime": false,
+  "afterRTH": true,
+  "historical": false,
+	"callBuyRsi": 30,
+	"callSellRsi": 70,
+	"putBuyRsi": 80,
+	"putSellRsi": 40,
+  "stocks":
+			[
+				{ "id":1001, "symbol": "AAPL", "price": 215, "quantity": 101, "capital": 100, "callStrike": 0, "putStrike":286, "expiration":20190510 },
+				{ "id":1002, "symbol": "AMZN", "price": 1820, "quantity": 102, "capital": 100, "callStrike": 0, "putStrike":286, "expiration":20190510 },
+				{ "id":1003, "symbol": "TQQQ", "price": 63, "quantity": 103, "capital": 100, "callStrike": 0, "putStrike":286, "expiration":20190510 },
+				{ "id":1004, "symbol": "FB", "price": 186, "quantity": 104, "capital": 100, "callStrike": 0, "putStrike":286, "expiration":20190510 },
+			  { "id":1005, "symbol": "MU", "price": 49, "quantity": 105, "capital": 100, "callStrike": 0, "putStrike":286, "expiration":20190510 }
+			]
+}

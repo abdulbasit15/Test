@@ -168,11 +168,24 @@ namespace Samples
             return contract;
         }
 
+        public static Contract GetContract(string symbol)
+        {
+            //! [stkcontract]
+            Contract contract = new Contract();
+            contract.Symbol = symbol;
+            contract.SecType = "STK";
+            contract.Currency = "USD";
+            //In the API side, NASDAQ is always defined as ISLAND in the exchange field
+            contract.Exchange = "ISLAND";
+            //! [stkcontract]
+            return contract;
+        }
+
         public static Contract USStock()
         {
             //! [stkcontract]
             Contract contract = new Contract();
-            contract.Symbol = "AAPL";
+            contract.Symbol = "TQQQ";
             contract.SecType = "STK";
             contract.Currency = "USD";
             //In the API side, NASDAQ is always defined as ISLAND in the exchange field
@@ -185,7 +198,7 @@ namespace Samples
         {
             //! [optcontract_us]
             Contract contract = new Contract();
-            contract.Symbol = "SPY";
+            contract.Symbol = "SJM";
             contract.SecType = "OPT";
             contract.Exchange = "SMART";
             contract.Currency = "USD";
@@ -211,20 +224,7 @@ namespace Samples
             contract.Multiplier = "100";
             //! [optcontract_us]
             return contract;
-        }
-
-        public static Contract USStock2()
-        {
-            //! [stkcontract]
-            Contract contract = new Contract();
-            contract.Symbol = "FB";
-            contract.SecType = "STK";
-            contract.Currency = "USD";
-            //In the API side, NASDAQ is always defined as ISLAND in the exchange field
-            contract.Exchange = "ISLAND";
-            //! [stkcontract]
-            return contract;
-        }
+        }        
 
         public static Contract USOptionContract2()
         {
@@ -256,20 +256,7 @@ namespace Samples
             contract.Multiplier = "100";
             //! [optcontract_us]
             return contract;
-        }
-
-        public static Contract USStock3()
-        {
-            //! [stkcontract]
-            Contract contract = new Contract();
-            contract.Symbol = "TSLA";
-            contract.SecType = "STK";
-            contract.Currency = "USD";
-            //In the API side, NASDAQ is always defined as ISLAND in the exchange field
-            contract.Exchange = "ISLAND";
-            //! [stkcontract]
-            return contract;
-        }
+        }        
 
         public static Contract USOptionContract3()
         {
@@ -301,20 +288,7 @@ namespace Samples
             contract.Multiplier = "100";
             //! [optcontract_us]
             return contract;
-        }
-
-        public static Contract USStock4()
-        {
-            //! [stkcontract]
-            Contract contract = new Contract();
-            contract.Symbol = "TQQQ";
-            contract.SecType = "STK";
-            contract.Currency = "USD";
-            //In the API side, NASDAQ is always defined as ISLAND in the exchange field
-            contract.Exchange = "ISLAND";
-            //! [stkcontract]
-            return contract;
-        }
+        }        
 
         public static Contract USOptionContract4()
         {
