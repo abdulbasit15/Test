@@ -1,11 +1,11 @@
 {
 	"realtime": false,
-  "afterRTH": true,
-  "historical": false,
-	"callBuyRsi": 30,
-	"callSellRsi": 70,
+  "afterRTH": false,
+  "historical": true,
+	"callBuyRsi": 20,
+	"callSellRsi": 30,
 	"putBuyRsi": 80,
-	"putSellRsi": 40,
+	"putSellRsi": 70,
   "stocks":
 			[
 				{ "id":1001, "symbol": "AAPL", "price": 215, "quantity": 101, "capital": 100, "callStrike": 0, "putStrike":286, "expiration":20190510 },

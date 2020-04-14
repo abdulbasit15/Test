@@ -10,6 +10,7 @@ using Testbed;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Samples
 {
@@ -23,7 +24,7 @@ namespace Samples
         public static TradeConfig tradeConfig;
         public static int Main(string[] args)
         {
-            string jsonText = File.ReadAllText(@"..\..\TradeConfig.json");
+            string jsonText = File.ReadAllText("TradeConfig.json");
             tradeConfig = JsonConvert.DeserializeObject<TradeConfig>(jsonText);
 
             testImpl = new EWrapperImpl();
@@ -181,18 +182,47 @@ namespace Samples
             /**********************************/
             /*** Historical Data operations ***/
             /**********************************/
-            historicalDataRequests(client);
+            //historicalDataRequests(client);
 
             /**********************************************************/
             /*** Real time market data operations  - Real Time Bars ***/
             /**********************************************************/
-            realTimeBars(client);
+            //realTimeBars(client);
+
+            VolumeSpike();
 
 
             Thread.Sleep(500000000);
             Thread.Sleep(500000000);
             Console.WriteLine("Done");
             Thread.Sleep(500000);
+        }
+
+        private static void VolumeSpike()
+        {
+            System.Net.WebClient wc = new System.Net.WebClient();
+            string page = wc.DownloadString("https://www.trade-ideas.com/SingleAlertType/VS1/1_minute_volume_spike.html");
+            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(page);
+
+            List<List<string>> table = doc.DocumentNode.SelectSingleNode("//table[@border='3']")
+                        .Descendants("tr")
+                        .Skip(1)
+                        .Where(tr => tr.Elements("td").Count() > 1)
+                        .Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToList())
+                        .ToList();
+
+            System.Net.WebClient wc1 = new System.Net.WebClient();
+            string page1 = wc1.DownloadString("https://finance.yahoo.com/screener/predefined/small_cap_gainers");
+            HtmlAgilityPack.HtmlDocument doc1 = new HtmlAgilityPack.HtmlDocument();
+            doc1.LoadHtml(page1);
+
+            List<List<string>> table1 = doc1.DocumentNode.SelectSingleNode("//table[@data-reactid='42']")
+                        .Descendants("tr")
+                        .Skip(1)
+                        .Where(tr => tr.Elements("td").Count() > 1)
+                        .Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToList())
+                        .ToList();
         }
 
         private static void historicalDataRequests(EClientSocket client)
@@ -206,7 +236,7 @@ namespace Samples
                 String queryTime = DateTime.Now.ToString("yyyyMMdd HH:mm:ss");
                 foreach (StockConfig sc in tradeConfig.Stocks)
                 {
-                    client.reqHistoricalData(sc.Id, ContractSamples.GetContract(sc.Symbol), queryTime, "1 M", "1 min", "MIDPOINT", 1, 1, false, null);
+                    client.reqHistoricalData(sc.Id, ContractSamples.GetContract(sc.Symbol), queryTime, "9 M", "1 min", "MIDPOINT", 1, 1, false, null);
                 }
                 //client.reqHistoricalData(1002, ContractSamples.USStock2(), queryTime, "9 M", "1 min", "MIDPOINT", 1, 1, false, null);
                 //! [reqhistoricaldata]

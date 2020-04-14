@@ -2050,16 +2050,16 @@ namespace Samples
                 //buyPut = Convert.ToBoolean(splits[17]);
             }
 
-            bool callBuyRsiTrigger = rsi < 20;
+            bool callBuyRsiTrigger = rsi < Sample.tradeConfig.CallBuyRsi;
             bool callBuyRsiCondition = callBuyRsiTrigger && rsi < lastRsi;
             bool callStopLossCondition = bar.Close < avgPrice * .997; // .3%
-            bool callSellRsiTrigger = rsi > 60;
+            bool callSellRsiTrigger = rsi > Sample.tradeConfig.CallSellRsi;
             bool callSellRsiCondition = callSellRsiTrigger && rsi < lastRsi;
 
-            bool putBuyRsiTrigger = rsi > 80;
+            bool putBuyRsiTrigger = rsi > Sample.tradeConfig.PutBuyRsi;
             bool putBuyRsiCondition = putBuyRsiTrigger && rsi < lastRsi;
             bool putStopLossCondition = bar.Close > put_avgPrice * 1.003; // .3%
-            bool putSellRsiTrigger = rsi < 40;
+            bool putSellRsiTrigger = rsi < Sample.tradeConfig.PutSellRsi;
             bool putlSellRsiCondition = putSellRsiTrigger && rsi < lastRsi;
 
             if (currentDate < tradeStartTime || currentDate > dontBuyTime)
